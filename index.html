@@ -48,61 +48,115 @@
         let response = await fetch(psiURL);
         let data = await response.json();
         //console.log(data.items[0].readings['psi_twenty_four_hourly']['west'])
-        console.log(data.region_metadata)
+        //console.log(data.region_metadata)
         let coordinates = JSON.parse(JSON.stringify(data.region_metadata));
+        
         westLat = coordinates[0].label_location.latitude;
         westLong = coordinates[0].label_location.longitude;
         westPsi = data.items[0].readings['psi_twenty_four_hourly']['west'];
         //console.log(westLat, westLong, westPsi)
-        var westCirle = L.circleMarker([westLat, westLong], {radius: 100}).addTo(map);
-        westCirle.setStyle({color:colorRange(westPsi)})
+        var westCircle = L.circleMarker([westLat, westLong], {radius: 100}).addTo(map);
+        westCircle.setStyle({color:colorRange(westPsi)})
+        westCircle.on('click',function onPopUpClick(e) {
+            var popup = L.popup()
+            popup
+                .setLatLng(e.latlng)
+                .setContent("[West] Current PSI value is: " + westPsi)
+                .openOn(map);
+        })
+        
 
         nationalLat = coordinates[1].label_location.latitude;
         nationalLong = coordinates[1].label_location.longitude;
         nationalPsi = data.items[0].readings['psi_twenty_four_hourly']['national'];
-        var nationalCirle = L.circleMarker([nationalLat, nationalLong], {radius: 100}).addTo(map);
-        nationalCirle.setStyle({color:colorRange(nationalPsi)})
+        var nationalCircle = L.circleMarker([nationalLat, nationalLong], {radius: 100}).addTo(map);
+        nationalCircle.setStyle({color:colorRange(nationalPsi)})
+        nationalCircle.on('click',function onPopUpClick(e) {
+            var popup = L.popup()
+            popup
+                .setLatLng(e.latlng)
+                .setContent("[National] Current PSI value is: " + nationalPsi)
+                .openOn(map);
+        })
 
         eastLat = coordinates[2].label_location.latitude;
         eastLong = coordinates[2].label_location.longitude;
         eastPsi = data.items[0].readings['psi_twenty_four_hourly']['east'];
-        var eastCirle = L.circleMarker([eastLat, eastLong], {radius: 100}).addTo(map);
-        eastCirle.setStyle({color:colorRange(eastPsi)})
+        var eastCircle = L.circleMarker([eastLat, eastLong], {radius: 100}).addTo(map);
+        eastCircle.setStyle({color:colorRange(eastPsi)})
+        eastCircle.on('click',function onPopUpClick(e) {
+            var popup = L.popup()
+            popup
+                .setLatLng(e.latlng)
+                .setContent("[East] Current PSI value is: " + eastPsi)
+                .openOn(map);
+        })
 
         centralLat = coordinates[3].label_location.latitude;
         centralLong = coordinates[3].label_location.longitude;
         centralPsi = data.items[0].readings['psi_twenty_four_hourly']['central'];
-        var centralCirle = L.circleMarker([centralLat, centralLong], {radius: 100}).addTo(map);
-        centralCirle.setStyle({color:colorRange(centralPsi)})
+        var centralCircle = L.circleMarker([centralLat, centralLong], {radius: 100}).addTo(map);
+        centralCircle.setStyle({color:colorRange(centralPsi)})
+        centralCircle.on('click',function onPopUpClick(e) {
+            var popup = L.popup()
+            popup
+                .setLatLng(e.latlng)
+                .setContent("[Central] Current PSI value is: " + centralPsi)
+                .openOn(map);
+        })
 
         southLat = coordinates[4].label_location.latitude;
         southLong = coordinates[4].label_location.longitude;
         southPsi = data.items[0].readings['psi_twenty_four_hourly']['south'];
-        var southCirle = L.circleMarker([southLat, southLong], {radius: 100}).addTo(map);
-        southCirle.setStyle({color:colorRange(southPsi)})
+        var southCircle = L.circleMarker([southLat, southLong], {radius: 100}).addTo(map);
+        southCircle.setStyle({color:colorRange(southPsi)})
+        southCircle.on('click',function onPopUpClick(e) {
+            var popup = L.popup()
+            popup
+                .setLatLng(e.latlng)
+                .setContent("[South] Current PSI value is: " + southPsi)
+                .openOn(map);
+        })
 
         northLat = coordinates[5].label_location.latitude;
         northLong = coordinates[5].label_location.longitude;
         northPsi = data.items[0].readings['psi_twenty_four_hourly']['north'];
-        var northCirle = L.circleMarker([northLat, northLong], {radius: 100}).addTo(map);
-        northCirle.setStyle({color:colorRange(northPsi)})
+        var northCircle = L.circleMarker([northLat, northLong], {radius: 100}).addTo(map);
+        northCircle.setStyle({color:colorRange(northPsi)})
+        console.log(colorRange(northPsi))
+        northCircle.on('click',function onPopUpClick(e) {
+            var popup = L.popup()
+            popup
+                .setLatLng(e.latlng)
+                .setContent("[North] Current PSI value is: " + northPsi)
+                .openOn(map);
+        })
     }
 
     function colorRange(psiValue){
-        if(psiValue <= 20){
-            return "#2E7F18"
-        }else if(20 < psiValue <= 25){
+        //console.log(psiValue)
+        if(psiValue < 35){
+            return '#2E7F18'
+        }else if(psiValue >= 35 && psiValue < 40){
             return "#45731E"
-        }else if(25 < psiValue <= 30){
+        }else if(psiValue >= 40 && psiValue < 45){
             return "#675E24"
-        }else if(30 < psiValue <= 35){
+        }else if(psiValue >= 45 && psiValue < 50){
             return "#8D472B"
-        }else if(35 < psiValue <= 40){
-            return "#B13433"
-        }else if(40 < psiValue <= 45){
-            return "#C82538"
+        }else if(psiValue >= 50 && psiValue < 55){
+            return '#B13433'
+        }else{
+            return '#C82538'
         }
         
+    }
+
+    function onPopUpClick(e) {
+        var popup = L.popup()
+        popup
+            .setLatLng(e.latlng)
+            .setContent("You clicked the map at " + e.latlng.toString())
+            .openOn(map);
     }
   </script>
   </html>
