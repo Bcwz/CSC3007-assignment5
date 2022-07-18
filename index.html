@@ -7,9 +7,17 @@
       <script src="https://cdn.onemap.sg/leaflet/onemap-leaflet.js"></script>
     </head>
     <body onload="fetchPsi()">
-      <h1>Singapore Map</h1>
+      <h1>Singapore live PSI readings. (PSI categories is made up.)</h1>
       <div id='mapdiv' style='height:800px;'></div>
     </body>
+    <style>
+        .circle{
+            height: 25px;
+            width: 25px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+    </style>
   <script>
     
     var center = L.bounds([1.56073, 104.11475], [1.16, 103.502]).getCenter();
@@ -61,7 +69,7 @@
             var popup = L.popup()
             popup
                 .setLatLng(e.latlng)
-                .setContent("[West] Current PSI value is: " + westPsi)
+                .setContent("[West] Current PSI value is: " + westPsi + ". " + "<br>PSI category is: "+ riskLevel(westPsi))
                 .openOn(map);
         })
         
@@ -75,7 +83,7 @@
             var popup = L.popup()
             popup
                 .setLatLng(e.latlng)
-                .setContent("[National] Current PSI value is: " + nationalPsi)
+                .setContent("[National] Current PSI value is: " + nationalPsi + ". " + "<br>PSI category is: "+ riskLevel(nationalPsi))
                 .openOn(map);
         })
 
@@ -88,7 +96,7 @@
             var popup = L.popup()
             popup
                 .setLatLng(e.latlng)
-                .setContent("[East] Current PSI value is: " + eastPsi)
+                .setContent("[East] Current PSI value is: " + eastPsi + ". " + "<br>PSI category is: "+ riskLevel(eastPsi))
                 .openOn(map);
         })
 
@@ -101,7 +109,7 @@
             var popup = L.popup()
             popup
                 .setLatLng(e.latlng)
-                .setContent("[Central] Current PSI value is: " + centralPsi)
+                .setContent("[Central] Current PSI value is: " + centralPsi + ". " + "<br>PSI category is: "+ riskLevel(centralPsi))
                 .openOn(map);
         })
 
@@ -114,7 +122,7 @@
             var popup = L.popup()
             popup
                 .setLatLng(e.latlng)
-                .setContent("[South] Current PSI value is: " + southPsi)
+                .setContent("[South] Current PSI value is: " + southPsi + ". " + "<br>PSI category is: "+ riskLevel(southPsi))
                 .openOn(map);
         })
 
@@ -128,10 +136,57 @@
             var popup = L.popup()
             popup
                 .setLatLng(e.latlng)
-                .setContent("[North] Current PSI value is: " + northPsi)
+                .setContent("[North] Current PSI value is: " + northPsi + ". " + "<br>PSI category is: "+ riskLevel(northPsi))
                 .openOn(map);
         })
+
+        var legend = L.control({position: 'bottomleft'});
+        legend.onAdd = function (map) {
+            var div = L.DomUtil.create('div', 'info legend');
+            labels = ['<strong>PSI Categories</strong>'],
+            categories = ['Very Healthy PSI','Healthy PSI','Moderate PSI','Unhealthy PSI','Very unhealthy PSI','Dangerous PSI'];
+
+            for (var i = 0; i < categories.length; i++) {
+                    div.innerHTML += 
+                    labels.push(
+                        '<i class="circle" style="background-color:' + getColor(categories[i]) + '"></i> ' +
+                    (categories[i] ? categories[i] : '+'));
+
+                }
+                div.innerHTML = labels.join('<br>');
+            return div;
+            };
+        legend.addTo(map);
     }
+
+    function getColor(d) {
+        if(d==="Very Healthy PSI"){
+            return "#2E7F18"
+        }else if(d === "Healthy PSI"){
+            return "#45731E"
+        }else if(d === "Moderate PSI"){
+            return "#675E24"
+        }else if(d === "Unhealthy PSI"){
+            return "#8D472B"
+        }else if(d === "Very unhealthy PSI"){
+            return '#B13433'
+        }else{
+            return '#C82538'
+        }
+    }
+
+    function style(feature) {
+        return {
+            weight: 1.5,
+            opacity: 1,
+            fillOpacity: 1,
+            radius: 6,
+            fillColor: getColor(feature.properties.TypeOfIssue),
+            color: "grey"
+
+        };
+    }
+
 
     function colorRange(psiValue){
         //console.log(psiValue)
@@ -147,6 +202,24 @@
             return '#B13433'
         }else{
             return '#C82538'
+        }
+        
+    }
+
+    function riskLevel(psiValue){
+        //console.log(psiValue)
+        if(psiValue < 35){
+            return 'Very Healthy'
+        }else if(psiValue >= 35 && psiValue < 40){
+            return "Healthy"
+        }else if(psiValue >= 40 && psiValue < 45){
+            return "Moderate"
+        }else if(psiValue >= 45 && psiValue < 50){
+            return "Unhealthy"
+        }else if(psiValue >= 50 && psiValue < 55){
+            return 'Very unhealthy'
+        }else{
+            return 'Dangerous'
         }
         
     }
